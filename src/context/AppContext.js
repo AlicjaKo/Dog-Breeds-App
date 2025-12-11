@@ -20,7 +20,11 @@ export const AppProvider = ({ children }) => {
         const fav = await AsyncStorage.getItem(FAVORITES_KEY);
         const ph = await AsyncStorage.getItem(PHOTOS_KEY);
         const st = await AsyncStorage.getItem(SETTINGS_KEY);
-        if (fav) setFavorites(JSON.parse(fav));
+        if (fav) {
+          // Ensure favorite IDs are stored as strings for consistent comparisons
+          const parsed = JSON.parse(fav) || [];
+          setFavorites(parsed.map((id) => String(id)));
+        }
         if (ph) setPhotos(JSON.parse(ph));
         if (st) setSettings(JSON.parse(st));
       } catch (e) {
@@ -53,8 +57,9 @@ export const AppProvider = ({ children }) => {
 
   const toggleFavorite = useCallback((breedId) => {
     setFavorites((prev) => {
-      if (prev.includes(breedId)) return prev.filter((id) => id !== breedId);
-      return [...prev, breedId];
+      const id = String(breedId);
+      if (prev.includes(id)) return prev.filter((i) => i !== id);
+      return [...prev, id];
     });
   }, []);
 

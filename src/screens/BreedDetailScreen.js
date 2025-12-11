@@ -1,12 +1,12 @@
-import React from 'react';
-import { ScrollView, Image, StyleSheet, View } from 'react-native';
-import { Title, Paragraph, Button, Card } from 'react-native-paper';
+import { ScrollView, Image, StyleSheet } from 'react-native';
+import { Title, Paragraph, Card, IconButton, useTheme } from 'react-native-paper';
 import { useApp } from '../context/AppContext';
 
 export default function BreedDetailScreen({ route }) {
   const { breed } = route.params;
   const { favorites, toggleFavorite } = useApp();
-  const isFavorite = favorites.includes(breed.id);
+  const isFavorite = favorites.includes(String(breed.id));
+  const { colors } = useTheme();
   return (
     <ScrollView>
       <Card>
@@ -20,7 +20,17 @@ export default function BreedDetailScreen({ route }) {
           <Paragraph>{breed.height ? `Height: ${breed.height.metric} cm` : ''}</Paragraph>
         </Card.Content>
         <Card.Actions>
-          <Button onPress={() => toggleFavorite(breed.id)}>{isFavorite ? 'Unfavorite' : 'Add to favorites'}</Button>
+          <IconButton
+            icon={isFavorite ? 'heart' : 'heart-outline'}
+            color={isFavorite ? (colors?.primary || '#ff6fb5') : '#9e9e9e'}
+            size={30}
+            onPress={() => toggleFavorite(breed.id)}
+            accessibilityLabel={isFavorite ? 'Unfavorite' : 'Add to favorites'}
+            style={[
+              styles.iconButton,
+              { borderColor: isFavorite ? (colors?.primary || '#ff6fb5') : '#9e9e9e' },
+            ]}
+          />
         </Card.Actions>
       </Card>
     </ScrollView>
@@ -29,4 +39,10 @@ export default function BreedDetailScreen({ route }) {
 
 const styles = StyleSheet.create({
   image: { width: '100%', height: 300 },
+  iconButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderRadius: 24,
+    margin: 6,
+  },
 });

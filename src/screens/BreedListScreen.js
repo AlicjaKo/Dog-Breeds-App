@@ -74,7 +74,7 @@ export default function BreedListScreen({ navigation }) {
           <BreedCard
             breed={item}
             onPress={() => navigation.navigate('BreedDetail', { breed: item })}
-            isFavorite={favorites.includes(item.id)}
+            isFavorite={favorites.includes(String(item.id))}
             onFavoritePress={() => toggleFavorite(item.id)}
           />
         )}

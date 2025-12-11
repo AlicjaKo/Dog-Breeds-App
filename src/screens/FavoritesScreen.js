@@ -12,7 +12,7 @@ export default function FavoritesScreen({ navigation }) {
   const data = useMemo(() => {
     if (!breeds || breeds.length === 0) return [];
     const favSet = new Set(favorites);
-    return breeds.filter((b) => favSet.has(b.id));
+    return breeds.filter((b) => favSet.has(String(b.id)));
   }, [breeds, favorites]);
 
   return (
@@ -30,7 +30,7 @@ export default function FavoritesScreen({ navigation }) {
           <BreedCard
             breed={item}
             onPress={() => navigation.navigate('Home', { screen: 'BreedDetail', params: { breed: item } })}
-            isFavorite={favorites.includes(item.id)}
+            isFavorite={favorites.includes(String(item.id))}
             onFavoritePress={() => toggleFavorite(item.id)}
           />
         )}
