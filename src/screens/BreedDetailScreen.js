@@ -1,5 +1,6 @@
 import { ScrollView, Image, StyleSheet, View, FlatList, Modal, TouchableOpacity } from 'react-native';
-import { Title, Paragraph, Card, IconButton, useTheme, ActivityIndicator } from 'react-native-paper';
+import { Paragraph, Card, IconButton, useTheme, ActivityIndicator } from 'react-native-paper';
+import Title from '../components/Title';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useApp } from '../context/AppContext';
 import { useEffect, useState } from 'react';
@@ -58,7 +59,7 @@ export default function BreedDetailScreen({ route }) {
           </TouchableOpacity>
         ) : null}
         <Card.Content>
-          <Title>{breed.name}</Title>
+          <Title variant="large">{breed.name}</Title>
           <Paragraph>{breed.breed_group ? `Group: ${breed.breed_group}` : ''}</Paragraph>
           <Paragraph>{breed.temperament}</Paragraph>
           <Paragraph>{breed.life_span ? `Life span: ${breed.life_span}` : ''}</Paragraph>
@@ -95,7 +96,7 @@ export default function BreedDetailScreen({ route }) {
       </Modal>
 
       <View style={styles.extraImagesContainer}>
-        <Title style={styles.sectionTitle}>Photos</Title>
+        <Title variant="medium" style={styles.sectionTitle}>Photos</Title>
         {loading ? (
           <ActivityIndicator animating size={36} />
         ) : error ? (

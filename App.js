@@ -60,9 +60,11 @@ function HomeStack() {
   return (
     <Stack.Navigator
       screenOptions={{
+        headerShown: false,
         headerStyle: { backgroundColor: theme.colors.surface },
         headerTintColor: theme.colors.onSurface,
         contentStyle: { backgroundColor: theme.colors.background },
+        headerTitleAlign: 'center',
       }}
     >
       <Stack.Screen name="Breeds" component={BreedListScreen} />
@@ -89,7 +91,6 @@ function Tabs() {
         name="Home"
         component={HomeStack}
         options={{
-          headerShown: false,
           tabBarIcon: ({ color, size }) => <Icon name="dog" color={color} size={size} />,
         }}
       />

@@ -1,5 +1,6 @@
 import { StyleSheet, Image } from 'react-native';
-import { Card, Paragraph, Title, IconButton, useTheme } from 'react-native-paper';
+import { Card, Paragraph, IconButton, useTheme } from 'react-native-paper';
+import Title from './Title';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 
 export default function BreedCard({ breed, onPress, onFavoritePress, isFavorite }) {
@@ -12,7 +13,7 @@ export default function BreedCard({ breed, onPress, onFavoritePress, isFavorite 
     <Card style={styles.card} onPress={onPress}>
       {imageUrl ? <Image source={{ uri: imageUrl }} style={styles.image} /> : null}
       <Card.Content>
-        <Title>{breed.name}</Title>
+        <Title variant="small">{breed.name}</Title>
         <Paragraph numberOfLines={2}>{breed.temperament}</Paragraph>
       </Card.Content>
       <Card.Actions>

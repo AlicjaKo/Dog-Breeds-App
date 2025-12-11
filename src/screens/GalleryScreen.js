@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
-import { Card, Paragraph, Title, useTheme } from 'react-native-paper';
+import { Card, Paragraph, useTheme } from 'react-native-paper';
+import Title from '../components/Title';
 import { useApp } from '../context/AppContext';
 import ImageViewing from 'react-native-image-viewing';
 
@@ -49,7 +50,7 @@ export default function GalleryScreen() {
               <Card style={styles.card}>
                 <Image source={{ uri: item.uri }} style={styles.image} />
                 <Card.Content>
-                  <Title>{new Date(item.createdAt).toLocaleString()}</Title>
+                  <Title variant="small">{new Date(item.createdAt).toLocaleString()}</Title>
                   <Paragraph>{item.note}</Paragraph>
                 </Card.Content>
               </Card>

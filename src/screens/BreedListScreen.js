@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
-import { ActivityIndicator, Searchbar, Text, Button, useTheme } from 'react-native-paper';
+import { ActivityIndicator, Searchbar, Text, Button, useTheme, IconButton, Portal, Dialog } from 'react-native-paper';
+import Title from '../components/Title';
 import { fetchBreeds } from '../api/dogApi';
 import BreedCard from '../components/BreedCard';
 import { useApp } from '../context/AppContext';
@@ -11,6 +12,7 @@ export default function BreedListScreen({ navigation }) {
   const [error, setError] = useState(null);
   const [query, setQuery] = useState('');
   const { colors } = useTheme();
+  const [aboutVisible, setAboutVisible] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -66,7 +68,16 @@ export default function BreedListScreen({ navigation }) {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}> 
-      <Searchbar placeholder="Search breeds" value={query} onChangeText={setQuery} />
+      <View style={styles.headerRow}>
+        <Title variant="large">Breeds</Title>
+        <IconButton
+          icon="help-circle-outline"
+          size={26}
+          onPress={() => setAboutVisible(true)}
+          accessibilityLabel="About this app"
+        />
+      </View>
+      <Searchbar style={styles.search} placeholder="Search breeds" value={query} onChangeText={setQuery} />
       <FlatList
         data={data}
         contentContainerStyle={data.length === 0 ? styles.flatEmptyContainer : undefined}
@@ -85,12 +96,25 @@ export default function BreedListScreen({ navigation }) {
           </View>
         )}
       />
+      <Portal>
+        <Dialog visible={aboutVisible} onDismiss={() => setAboutVisible(false)}>
+          <Dialog.Title>About</Dialog.Title>
+          <Dialog.Content>
+            <Text>This app lists dog breeds and allows you to save favorites. Built for a mobile project.</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setAboutVisible(false)}>Close</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingTop: 12 },
+  search: { marginHorizontal: 12, marginTop: 8, marginBottom: 6 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   flatEmptyContainer: { flex: 1 },
 });
