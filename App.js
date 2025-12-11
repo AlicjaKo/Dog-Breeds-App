@@ -1,6 +1,6 @@
 import React from 'react';
 import { StatusBar, View, StyleSheet } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Provider as PaperProvider, MD3LightTheme, MD3DarkTheme, IconButton, Portal, Dialog, Button, Text } from 'react-native-paper';
@@ -75,6 +75,9 @@ function HomeStack() {
   );
 }
 
+// navigation ref used for inspecting current route and going back from floating controls
+const navRef = createNavigationContainerRef();
+
 function Tabs() {
   const { settings } = useApp();
   const theme = settings.darkMode ? darkPinkTheme : pinkTheme;
@@ -134,12 +137,15 @@ export default function App() {
 function RootApp() {
   const { settings } = useApp();
   const theme = settings.darkMode ? darkPinkTheme : pinkTheme;
+  const [currentRoute, setCurrentRoute] = React.useState(null);
 
   return (
     <PaperProvider theme={theme}>
       <StatusBar barStyle={settings.darkMode ? 'light-content' : 'dark-content'} />
       {/* Map paper theme to react-navigation theme so navigation components follow colors */}
       <NavigationContainer
+        ref={navRef}
+        onStateChange={() => setCurrentRoute(navRef.getCurrentRoute())}
         theme={{
           dark: settings.darkMode,
           colors: {
@@ -155,14 +161,24 @@ function RootApp() {
         <Tabs />
       </NavigationContainer>
 
-      {/* Floating dark mode toggle */}
-      <View style={styles.toggleContainer} pointerEvents="box-none">
-        <ThemeToggle />
-      </View>
-
-      {/* Floating help button */}
-      <View style={styles.helpContainer} pointerEvents="box-none">
+      {/* Left/top back button (visible on BreedDetail) */}
+      {currentRoute?.name === 'BreedDetail' && navRef.canGoBack() ? (
+        <View style={styles.leftTopControls} pointerEvents="box-none">
+          <IconButton
+            icon="arrow-left"
+            size={28}
+            onPress={() => {
+              if (navRef.canGoBack()) navRef.goBack();
+            }}
+            accessibilityLabel="Go back"
+            style={styles.backButton}
+          />
+        </View>
+      ) : null}
+      {/* Floating controls: help + dark mode toggle */}
+      <View style={styles.topRightControls} pointerEvents="box-none">
         <HelpButton />
+        <ThemeToggle />
       </View>
     </PaperProvider>
   );
@@ -217,22 +233,30 @@ function HelpButton() {
 }
 
 const styles = StyleSheet.create({
-  toggleContainer: {
+  topRightControls: {
     position: 'absolute',
     top: 44,
     right: 12,
     zIndex: 1000,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   toggleButton: {
     backgroundColor: 'transparent',
   },
-  helpContainer: {
+  helpButton: {
+    backgroundColor: 'transparent',
+    marginRight: 8,
+  },
+  leftTopControls: {
     position: 'absolute',
     top: 44,
     left: 12,
     zIndex: 1000,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  helpButton: {
+  backButton: {
     backgroundColor: 'transparent',
   },
 });

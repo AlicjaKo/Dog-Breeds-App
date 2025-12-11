@@ -107,6 +107,24 @@ export default function CameraScreen() {
     };
   }, []);
 
+  // if cameraActive becomes true but camera never reports ready, time out and inform the user
+  // this helps when the camera hardware is busy/locked by another app and the view never mounts
+  useEffect(() => {
+    let timer;
+    if (cameraActive && !cameraReady) {
+      timer = setTimeout(() => {
+        if (!cameraReady) {
+          console.warn('Camera failed to become ready within timeout');
+          try {
+            Alert.alert('Camera not available', 'Sorry, camera failed to initialize. It may be in use by another app.');
+          } catch (_e) {}
+          setCameraActive(false);
+        }
+      }, 4000);
+    }
+    return () => clearTimeout(timer);
+  }, [cameraActive, cameraReady]);
+
   const persistPhoto = async () => {
     if (!photoUri) return;
     const fileName = `${FileSystem.documentDirectory}photo_${Date.now()}.jpg`;
@@ -156,7 +174,15 @@ export default function CameraScreen() {
             ref={cameraRef}
             ratio="16:9"
             onCameraReady={() => setCameraReady(true)}
-            onMountError={() => setCameraReady(false)}
+            onMountError={(err) => {
+              console.warn('Camera mount error', err);
+              setCameraReady(false);
+              // notify user and fall back to non-active camera UI
+              try {
+                Alert.alert('Camera not available', 'Sorry, camera not available. It may be in use by another app.');
+              } catch (_e) {}
+              setCameraActive(false);
+            }}
           />
           <View style={styles.cameraControlsOverlay} pointerEvents="box-none">
             <Button mode="contained" onPress={takePicture} disabled={!cameraReady || taking}>
