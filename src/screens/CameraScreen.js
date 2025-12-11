@@ -13,9 +13,7 @@ export default function CameraScreen() {
   const [note, setNote] = useState('');
   const [taking, setTaking] = useState(false);
   const { savePhoto } = useApp();
-  // Use the renderable CameraView component exported by expo-camera
   const CameraComponent = ExpoCamera.CameraView || ExpoCamera.default || ExpoCamera;
-  // Camera will only be activated when the user explicitly requests it
   const [cameraActive, setCameraActive] = useState(false);
 
   const requestCamera = async () => {
@@ -31,7 +29,6 @@ export default function CameraScreen() {
           Alert.alert('Permission required', 'Camera permission was denied.');
         }
       } else {
-        // If permission API isn't available, try to activate anyway
         setHasPermission(true);
         setCameraActive(true);
       }
@@ -49,15 +46,12 @@ export default function CameraScreen() {
       const runner = cameraRef.current.takePictureAsync || cameraRef.current.takePicture;
       if (typeof runner !== 'function') throw new Error('Camera API not available');
       const photo = await runner.call(cameraRef.current, { quality: 0.7 });
-      // some implementations return { uri } and some return { uri: ... }
       const uri = photo?.uri || photo;
       if (!uri) throw new Error('No photo uri returned');
       setPhotoUri(uri);
-      // pause preview if camera exposes a method
       try {
         if (cameraRef.current.pausePreview) await cameraRef.current.pausePreview();
       } catch (_e) {
-        // ignore
       }
     } catch (e) {
       console.warn('Failed to take picture', e);
@@ -67,40 +61,33 @@ export default function CameraScreen() {
     }
   };
 
-  // Pause/resume camera when tab loses/gains focus to avoid native crashes
   useFocusEffect(
     React.useCallback(() => {
-      // on focus
       let mounted = true;
       (async () => {
         try {
           if (mounted && hasPermission) {
-            // small delay to let native view mount
             setTimeout(() => {
               setCameraActive(true);
             }, 50);
           }
         } catch (_err) {
-          // ignore
         }
       })();
 
       return () => {
-        // on blur
         mounted = false;
         try {
           if (cameraRef.current?.pausePreview) {
             cameraRef.current.pausePreview().catch(() => {});
           }
         } catch (_err) {
-          // ignore
         }
         setCameraActive(false);
       };
     }, [hasPermission])
   );
 
-  // Cleanup cameraRef on unmount
   useEffect(() => {
     return () => {
       try {
@@ -114,7 +101,6 @@ export default function CameraScreen() {
 
   const persistPhoto = async () => {
     if (!photoUri) return;
-    // Optionally copy to app data folder
     const fileName = `${FileSystem.documentDirectory}photo_${Date.now()}.jpg`;
     try {
       await FileSystem.copyAsync({ from: photoUri, to: fileName });
@@ -122,11 +108,9 @@ export default function CameraScreen() {
       savePhoto(obj);
       setPhotoUri(null);
       setNote('');
-      // resume preview after saving
       try {
         if (cameraRef.current?.resumePreview) await cameraRef.current.resumePreview();
         } catch (_e) {
-          // ignore
         }
       } catch (err) {
         console.warn('Failed to save photo', err);
@@ -162,11 +146,9 @@ export default function CameraScreen() {
             <Button onPress={async () => {
               setPhotoUri(null);
               setNote('');
-              // try to resume preview when retaking
               try {
                 if (cameraRef.current?.resumePreview) await cameraRef.current.resumePreview();
               } catch (_err) {
-                // ignore
               }
             }}>Retake</Button>
           </View>

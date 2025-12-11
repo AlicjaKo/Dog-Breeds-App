@@ -12,17 +12,17 @@ import BreedListScreen from './src/screens/BreedListScreen';
 import BreedDetailScreen from './src/screens/BreedDetailScreen';
 import CameraScreen from './src/screens/CameraScreen';
 import GalleryScreen from './src/screens/GalleryScreen';
+import FavoritesScreen from './src/screens/FavoritesScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Pink / Purple girly themes (constructed safely)
 const pinkTheme = {
   ...DefaultTheme,
   colors: {
     ...(DefaultTheme?.colors || {}),
-    primary: '#ff6fb5', // bright pink
-    accent: '#7B2FF7', // purple
+    primary: '#ff6fb5', 
+    accent: '#7B2FF7', 
     background: '#fff7fb',
     surface: '#fff0f8',
     text: '#3b0b3b',
@@ -66,6 +66,13 @@ function Tabs() {
           tabBarIcon: ({ color, size }) => <Icon name="dog" color={color} size={size} />,
         }}
       />
+        <Tab.Screen
+          name="Favorites"
+          component={FavoritesScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => <Icon name="heart" color={color} size={size} />,
+          }}
+        />
       <Tab.Screen
         name="Camera"
         component={CameraScreen}

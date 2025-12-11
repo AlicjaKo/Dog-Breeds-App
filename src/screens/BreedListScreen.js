@@ -49,7 +49,6 @@ export default function BreedListScreen({ navigation }) {
         <Button mode="contained" onPress={() => {
           setLoading(true);
           setError(null);
-          // trigger effect by calling fetch directly
           (async () => {
             try {
               const list = await fetchBreeds({ useCache: false, timeout: 10000 });

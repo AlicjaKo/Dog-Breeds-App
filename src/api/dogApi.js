@@ -9,25 +9,21 @@ export async function fetchBreeds({ useCache = true, timeout = 10000 } = {}) {
       const cached = await AsyncStorage.getItem(BREEDS_CACHE_KEY);
       if (cached) return JSON.parse(cached);
     } catch (e) {
-      // ignore cache read errors
     }
   }
 
-  // Implement timeout using AbortController
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
   let res;
   try {
     res = await fetch(BREEDS_URL, { signal: controller.signal });
   } catch (e) {
-    // on network error or abort, try to return cached data if available
     clearTimeout(id);
     if (useCache) {
       try {
         const cached = await AsyncStorage.getItem(BREEDS_CACHE_KEY);
         if (cached) return JSON.parse(cached);
         } catch (_err) {
-        // ignore
       }
     }
       throw new Error(e.name === 'AbortError' ? 'Request timed out' : 'Network request failed');
@@ -40,7 +36,6 @@ export async function fetchBreeds({ useCache = true, timeout = 10000 } = {}) {
   try {
     await AsyncStorage.setItem(BREEDS_CACHE_KEY, JSON.stringify(json));
   } catch (e) {
-    // ignore cache write errors
   }
   return json;
 }

@@ -15,7 +15,6 @@ export const AppProvider = ({ children }) => {
   const [settings, setSettings] = useState({ darkMode: false });
 
   useEffect(() => {
-    // load persisted state
     (async () => {
       try {
         const fav = await AsyncStorage.getItem(FAVORITES_KEY);
@@ -30,7 +29,7 @@ export const AppProvider = ({ children }) => {
     })();
   }, []);
 
-  // persisters
+
   useEffect(() => {
     AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites)).catch(() => {});
   }, [favorites]);
@@ -60,7 +59,6 @@ export const AppProvider = ({ children }) => {
   }, []);
 
   const savePhoto = useCallback((photo) => {
-    // photo: { id, uri, note, createdAt }
     setPhotos((prev) => [photo, ...prev]);
   }, []);
 

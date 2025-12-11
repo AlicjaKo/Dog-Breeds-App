@@ -8,10 +8,7 @@ export default class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, info) {
-    // Save to state so we can render fallback UI
     this.setState({ error, info });
-    // Also log to console
-    // eslint-disable-next-line no-console
     console.error('Uncaught error:', error, info);
   }
 
