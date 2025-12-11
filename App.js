@@ -215,14 +215,18 @@ function HelpButton() {
         <Dialog visible={visible} onDismiss={() => setVisible(false)}>
           <Dialog.Title>About</Dialog.Title>
           <Dialog.Content>
-            <Text style={{ marginBottom: 8 }}>Dog Breeds Explorer! Mobile app to discover dog breeds.</Text>
-            <Text style={{ marginBottom: 6 }}>Features:</Text>
-            <Text>- Browse a searchable list of dog breeds with photos and details.</Text>
-            <Text>- Open breed pages for more photos, temperament, lifespan, weight and height.</Text>
-            <Text>- Save breeds to your favorites for quick access.</Text>
-            <Text>- Use the Camera and Gallery tabs to add or view images.</Text>
-            <Text style={{ marginTop: 8 }}>Built with React Native, React Navigation and Expo integrations.</Text>
-          </Dialog.Content>
+              <Text style={{ marginBottom: 8 }}>Dog Breeds Explorer — discover and learn about dog breeds with photos, facts and saved favorites.</Text>
+              <Text style={{ marginBottom: 6 }}>Version: v1.2.0</Text>
+
+              <Text style={{ marginBottom: 6 }}>Key Features:</Text>
+              <Text>- Browse a searchable, filterable list of breeds with thumbnail images.</Text>
+              <Text>- View detailed breed pages with temperament, lifespan, weight, height and multiple photos.</Text>
+              <Text>- Save breeds to your favorites for quick access and offline viewing of recently opened breeds.</Text>
+              <Text>- Add new photos from the Camera or choose from the Gallery; save images locally to your device.</Text>
+              <Text>- Toggle Dark Mode and use accessibility-friendly colors and larger text sizes.</Text>
+
+              <Text style={{ marginTop: 8 }}>Built with React Native, React Navigation and Expo.</Text>
+            </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setVisible(false)}>Close</Button>
           </Dialog.Actions>
