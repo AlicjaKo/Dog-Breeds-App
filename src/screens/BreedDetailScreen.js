@@ -1,4 +1,4 @@
-import { ScrollView, Image, StyleSheet, View, FlatList } from 'react-native';
+import { ScrollView, Image, StyleSheet, View, FlatList, Modal, TouchableOpacity } from 'react-native';
 import { Title, Paragraph, Card, IconButton, useTheme, ActivityIndicator } from 'react-native-paper';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useApp } from '../context/AppContext';
@@ -14,6 +14,14 @@ export default function BreedDetailScreen({ route }) {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalImage, setModalImage] = useState(null);
+
+  const openImage = (uri) => {
+    if (!uri) return;
+    setModalImage(uri);
+    setModalVisible(true);
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -42,9 +50,13 @@ export default function BreedDetailScreen({ route }) {
   }, [breed.id, breed.image?.url]);
 
   return (
-    <ScrollView>
+    <ScrollView style={{ backgroundColor: colors.background }}>
       <Card>
-        {breed.image?.url ? <Image source={{ uri: breed.image.url }} style={styles.image} /> : null}
+        {breed.image?.url ? (
+          <TouchableOpacity activeOpacity={0.9} onPress={() => openImage(breed.image.url)}>
+            <Image source={{ uri: breed.image.url }} style={styles.image} />
+          </TouchableOpacity>
+        ) : null}
         <Card.Content>
           <Title>{breed.name}</Title>
           <Paragraph>{breed.breed_group ? `Group: ${breed.breed_group}` : ''}</Paragraph>
@@ -76,6 +88,12 @@ export default function BreedDetailScreen({ route }) {
         </Card.Actions>
       </Card>
 
+      <Modal visible={modalVisible} transparent animationType="fade" onRequestClose={() => setModalVisible(false)}>
+        <TouchableOpacity style={styles.modalContainer} activeOpacity={1} onPress={() => setModalVisible(false)}>
+          <Image source={{ uri: modalImage }} style={styles.modalImage} resizeMode="contain" />
+        </TouchableOpacity>
+      </Modal>
+
       <View style={styles.extraImagesContainer}>
         <Title style={styles.sectionTitle}>Photos</Title>
         {loading ? (
@@ -91,7 +109,9 @@ export default function BreedDetailScreen({ route }) {
             keyExtractor={(item) => `${breed.id}-img-${item}`}
             showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => (
-              <Image source={{ uri: item }} style={styles.thumb} />
+              <TouchableOpacity activeOpacity={0.85} onPress={() => openImage(item)}>
+                <Image source={{ uri: item }} style={styles.thumb} />
+              </TouchableOpacity>
             )}
           />
         )}
@@ -111,4 +131,6 @@ const styles = StyleSheet.create({
   extraImagesContainer: { padding: 12 },
   sectionTitle: { marginBottom: 8 },
   thumb: { width: 150, height: 120, marginRight: 8, borderRadius: 6 },
+  modalContainer: { flex: 1, backgroundColor: 'rgba(0,0,0,0.9)', justifyContent: 'center', alignItems: 'center' },
+  modalImage: { width: '100%', height: '80%' },
 });

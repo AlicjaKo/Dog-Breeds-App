@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
-import { ActivityIndicator, Searchbar, Text, Button } from 'react-native-paper';
+import { ActivityIndicator, Searchbar, Text, Button, useTheme } from 'react-native-paper';
 import { fetchBreeds } from '../api/dogApi';
 import BreedCard from '../components/BreedCard';
 import { useApp } from '../context/AppContext';
@@ -10,6 +10,7 @@ export default function BreedListScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [query, setQuery] = useState('');
+  const { colors } = useTheme();
 
   useEffect(() => {
     let mounted = true;
@@ -37,14 +38,14 @@ export default function BreedListScreen({ navigation }) {
 
   if (loading)
     return (
-      <View style={styles.center}>
+      <View style={[styles.center, { backgroundColor: colors.background }]}> 
         <ActivityIndicator animating size={48} />
       </View>
     );
 
   if (error)
     return (
-      <View style={styles.center}>
+      <View style={[styles.center, { backgroundColor: colors.background }]}> 
         <Text>{error}</Text>
         <Button mode="contained" onPress={() => {
           setLoading(true);
@@ -64,7 +65,7 @@ export default function BreedListScreen({ navigation }) {
     );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}> 
       <Searchbar placeholder="Search breeds" value={query} onChangeText={setQuery} />
       <FlatList
         data={data}

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Text, useTheme } from 'react-native-paper';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import BreedCard from '../components/BreedCard';
 import { useApp } from '../context/AppContext';
@@ -8,6 +8,7 @@ import { useApp } from '../context/AppContext';
 export default function FavoritesScreen({ navigation }) {
   const { breeds, favorites, toggleFavorite } = useApp();
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
 
   const data = useMemo(() => {
     if (!breeds || breeds.length === 0) return [];
@@ -16,7 +17,7 @@ export default function FavoritesScreen({ navigation }) {
   }, [breeds, favorites]);
 
   return (
-    <SafeAreaView style={[styles.container, { paddingTop: insets.top || 8 }]} edges={["top", "left", "right"]}>
+    <SafeAreaView style={[styles.container, { paddingTop: insets.top || 8, backgroundColor: colors.background }]} edges={["top", "left", "right"]}>
       <FlatList
         data={data}
         contentContainerStyle={

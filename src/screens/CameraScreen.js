@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, StyleSheet, Image, Alert } from 'react-native';
-import { Button, TextInput, Text } from 'react-native-paper';
+import { Button, TextInput, Text, useTheme } from 'react-native-paper';
 import * as ExpoCamera from 'expo-camera';
 // Use the legacy API to keep `moveAsync` available (new File/Directory classes exist in the
 // modern API). This avoids runtime errors caused by the deprecated default export.
@@ -16,6 +16,7 @@ export default function CameraScreen() {
   const [taking, setTaking] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
   const { savePhoto } = useApp();
+  const { colors } = useTheme();
   const CameraComponent = ExpoCamera.CameraView || ExpoCamera.default || ExpoCamera;
   const [cameraActive, setCameraActive] = useState(false);
 
@@ -137,17 +138,17 @@ export default function CameraScreen() {
 
   if (!cameraActive)
     return (
-      <View style={styles.center}>
+      <View style={[styles.center, { backgroundColor: colors.background }]}> 
         <Button mode="contained" onPress={requestCamera}>
           Open Camera
         </Button>
       </View>
     );
 
-  if (hasPermission === false) return <View style={styles.center}><Text>No access to camera</Text></View>;
+  if (hasPermission === false) return <View style={[styles.center, { backgroundColor: colors.background }]}><Text>No access to camera</Text></View>;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}> 
       {!photoUri ? (
         <View style={styles.cameraContainer}>
           <CameraComponent
