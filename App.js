@@ -3,7 +3,7 @@ import { StatusBar, View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Provider as PaperProvider, MD3LightTheme, MD3DarkTheme, IconButton } from 'react-native-paper';
+import { Provider as PaperProvider, MD3LightTheme, MD3DarkTheme, IconButton, Portal, Dialog, Button, Text } from 'react-native-paper';
 
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 
@@ -36,6 +36,7 @@ const pinkTheme = {
     background: '#fff7fb',
     surface: '#fff0f8',
     onSurface: '#3b0b3b',
+    text: '#3b0b3b',
     outline: '#c287b6',
   },
 };
@@ -49,6 +50,7 @@ const darkPinkTheme = {
     background: '#230022',
     surface: '#2b0b2f',
     onSurface: '#ffdff6',
+    text: '#ffdff6',
     outline: '#b08bd9',
   },
 };
@@ -157,6 +159,11 @@ function RootApp() {
       <View style={styles.toggleContainer} pointerEvents="box-none">
         <ThemeToggle />
       </View>
+
+      {/* Floating help button */}
+      <View style={styles.helpContainer} pointerEvents="box-none">
+        <HelpButton />
+      </View>
     </PaperProvider>
   );
 }
@@ -175,6 +182,40 @@ function ThemeToggle() {
   );
 }
 
+function HelpButton() {
+  const [visible, setVisible] = React.useState(false);
+
+  return (
+    <>
+      <IconButton
+        icon="help-circle-outline"
+        size={28}
+        onPress={() => setVisible(true)}
+        style={styles.helpButton}
+        accessibilityLabel="About this app"
+      />
+
+      <Portal>
+        <Dialog visible={visible} onDismiss={() => setVisible(false)}>
+          <Dialog.Title>About</Dialog.Title>
+          <Dialog.Content>
+            <Text style={{ marginBottom: 8 }}>Dog Breeds Explorer! Mobile app to discover dog breeds.</Text>
+            <Text style={{ marginBottom: 6 }}>Features:</Text>
+            <Text>- Browse a searchable list of dog breeds with photos and details.</Text>
+            <Text>- Open breed pages for more photos, temperament, lifespan, weight and height.</Text>
+            <Text>- Save breeds to your favorites for quick access.</Text>
+            <Text>- Use the Camera and Gallery tabs to add or view images.</Text>
+            <Text style={{ marginTop: 8 }}>Built with React Native, React Navigation and Expo integrations.</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setVisible(false)}>Close</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+    </>
+  );
+}
+
 const styles = StyleSheet.create({
   toggleContainer: {
     position: 'absolute',
@@ -183,6 +224,15 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   toggleButton: {
+    backgroundColor: 'transparent',
+  },
+  helpContainer: {
+    position: 'absolute',
+    top: 44,
+    left: 12,
+    zIndex: 1000,
+  },
+  helpButton: {
     backgroundColor: 'transparent',
   },
 });
