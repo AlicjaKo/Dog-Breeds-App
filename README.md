@@ -89,12 +89,4 @@ Please open issues and pull requests. When reporting bugs, include reproduction 
 
 ## License
 
-This project is open source — add your preferred license (e.g., MIT).
-
----
-
-If you'd like, I can:
-
-- Add a direct GitHub issue link and a contact email.
-- Sync the README `Version` automatically with `package.json`.
-- Add screenshots and badges to the README.
+MIT
