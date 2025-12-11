@@ -19,7 +19,10 @@ export default function BreedCard({ breed, onPress, onFavoritePress, isFavorite 
         <IconButton
           icon={() => <Icon name={heartIcon} size={26} color={heartColor} />}
           size={26}
-          onPress={onFavoritePress}
+          onPress={(e) => {
+            if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+            if (typeof onFavoritePress === 'function') onFavoritePress();
+          }}
           accessibilityLabel={isFavorite ? 'Unfavorite' : 'Favorite'}
           style={[
             styles.iconButton,

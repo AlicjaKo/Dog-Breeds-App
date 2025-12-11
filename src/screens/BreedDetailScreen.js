@@ -1,5 +1,6 @@
 import { ScrollView, Image, StyleSheet, View, FlatList } from 'react-native';
 import { Title, Paragraph, Card, IconButton, useTheme, ActivityIndicator } from 'react-native-paper';
+import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useApp } from '../context/AppContext';
 import { useEffect, useState } from 'react';
 import { fetchBreedImages } from '../api/dogApi';
@@ -54,10 +55,18 @@ export default function BreedDetailScreen({ route }) {
         </Card.Content>
         <Card.Actions>
           <IconButton
-            icon={isFavorite ? 'heart' : 'heart-outline'}
-            color={isFavorite ? (colors?.primary || '#ff6fb5') : '#9e9e9e'}
+            icon={() => (
+              <Icon
+                name={isFavorite ? 'heart' : 'heart-outline'}
+                size={30}
+                color={isFavorite ? (colors?.primary || '#ff6fb5') : '#9e9e9e'}
+              />
+            )}
             size={30}
-            onPress={() => toggleFavorite(breed.id)}
+            onPress={(e) => {
+              if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+              toggleFavorite(breed.id);
+            }}
             accessibilityLabel={isFavorite ? 'Unfavorite' : 'Add to favorites'}
             style={[
               styles.iconButton,
