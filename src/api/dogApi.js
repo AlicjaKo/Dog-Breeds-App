@@ -39,3 +39,27 @@ export async function fetchBreeds({ useCache = true, timeout = 10000 } = {}) {
   }
   return json;
 }
+
+export async function fetchBreedImages({ breedId, limit = 8, timeout = 10000 } = {}) {
+  if (!breedId) return [];
+  const url = `https://api.thedogapi.com/v1/images/search?breed_id=${encodeURIComponent(breedId)}&limit=${encodeURIComponent(
+    limit
+  )}`;
+
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  let res;
+  try {
+    res = await fetch(url, { signal: controller.signal });
+  } catch (e) {
+    clearTimeout(id);
+    throw new Error(e.name === 'AbortError' ? 'Request timed out' : 'Network request failed');
+  } finally {
+    clearTimeout(id);
+  }
+
+  if (!res.ok) throw new Error('Failed to fetch breed images');
+  const json = await res.json();
+  // json is an array of image objects
+  return json;
+}

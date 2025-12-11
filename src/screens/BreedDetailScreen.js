@@ -1,12 +1,45 @@
-import { ScrollView, Image, StyleSheet } from 'react-native';
-import { Title, Paragraph, Card, IconButton, useTheme } from 'react-native-paper';
+import { ScrollView, Image, StyleSheet, View, FlatList } from 'react-native';
+import { Title, Paragraph, Card, IconButton, useTheme, ActivityIndicator } from 'react-native-paper';
 import { useApp } from '../context/AppContext';
+import { useEffect, useState } from 'react';
+import { fetchBreedImages } from '../api/dogApi';
 
 export default function BreedDetailScreen({ route }) {
   const { breed } = route.params;
   const { favorites, toggleFavorite } = useApp();
   const isFavorite = favorites.includes(String(breed.id));
   const { colors } = useTheme();
+
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const imgs = await fetchBreedImages({ breedId: breed.id, limit: 8, timeout: 10000 });
+        if (!mounted) return;
+        const urls = imgs
+          .map((i) => i.url)
+          .filter(Boolean)
+          .filter((u, idx, arr) => arr.indexOf(u) === idx)
+          .filter((u) => u !== breed.image?.url);
+        setImages(urls);
+      } catch (e) {
+        if (!mounted) return;
+        setError(e.message || 'Failed to load images');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [breed.id, breed.image?.url]);
+
   return (
     <ScrollView>
       <Card>
@@ -33,6 +66,27 @@ export default function BreedDetailScreen({ route }) {
           />
         </Card.Actions>
       </Card>
+
+      <View style={styles.extraImagesContainer}>
+        <Title style={styles.sectionTitle}>Photos</Title>
+        {loading ? (
+          <ActivityIndicator animating size={36} />
+        ) : error ? (
+          <Paragraph>{error}</Paragraph>
+        ) : images.length === 0 ? (
+          <Paragraph>No additional photos available.</Paragraph>
+        ) : (
+          <FlatList
+            data={images}
+            horizontal
+            keyExtractor={(item) => `${breed.id}-img-${item}`}
+            showsHorizontalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <Image source={{ uri: item }} style={styles.thumb} />
+            )}
+          />
+        )}
+      </View>
     </ScrollView>
   );
 }
@@ -45,4 +99,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     margin: 6,
   },
+  extraImagesContainer: { padding: 12 },
+  sectionTitle: { marginBottom: 8 },
+  thumb: { width: 150, height: 120, marginRight: 8, borderRadius: 6 },
 });
