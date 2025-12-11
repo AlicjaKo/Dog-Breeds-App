@@ -1,11 +1,13 @@
 import React, { useMemo } from 'react';
-import { View, FlatList, StyleSheet } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import BreedCard from '../components/BreedCard';
 import { useApp } from '../context/AppContext';
 
 export default function FavoritesScreen({ navigation }) {
   const { breeds, favorites, toggleFavorite } = useApp();
+  const insets = useSafeAreaInsets();
 
   const data = useMemo(() => {
     if (!breeds || breeds.length === 0) return [];
@@ -13,18 +15,17 @@ export default function FavoritesScreen({ navigation }) {
     return breeds.filter((b) => favSet.has(b.id));
   }, [breeds, favorites]);
 
-  if (!data || data.length === 0)
-    return (
-      <View style={styles.center}>
-        <Text>No favorites yet. Tap the heart on a breed to add it here.</Text>
-      </View>
-    );
-
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={[styles.container, { paddingTop: insets.top || 8 }]} edges={["top", "left", "right"]}>
       <FlatList
         data={data}
+        contentContainerStyle={
+          data.length === 0 ? [styles.flatEmptyContainer, styles.listContent] : styles.listContent
+        }
         keyExtractor={(item) => String(item.id)}
+        ListEmptyComponent={() => (
+          <Text>No favorites yet. Tap the heart on a breed to add it here.</Text>
+        )}
         renderItem={({ item }) => (
           <BreedCard
             breed={item}
@@ -34,11 +35,13 @@ export default function FavoritesScreen({ navigation }) {
           />
         )}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16 },
+  flatEmptyContainer: { flex: 1 },
+  listContent: { paddingVertical: 8 },
 });

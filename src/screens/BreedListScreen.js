@@ -68,6 +68,7 @@ export default function BreedListScreen({ navigation }) {
       <Searchbar placeholder="Search breeds" value={query} onChangeText={setQuery} />
       <FlatList
         data={data}
+        contentContainerStyle={data.length === 0 ? styles.flatEmptyContainer : undefined}
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
           <BreedCard
@@ -90,4 +91,5 @@ export default function BreedListScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  flatEmptyContainer: { flex: 1 },
 });

@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Provider as PaperProvider, DefaultTheme, DarkTheme } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 
 import { AppProvider, useApp } from './src/context/AppContext';
 import ErrorBoundary from './src/components/ErrorBoundary';
@@ -57,7 +57,12 @@ function Tabs() {
   const theme = settings.darkMode ? darkPinkTheme : pinkTheme;
   return (
     <Tab.Navigator
-      screenOptions={{ headerShown: false, tabBarActiveTintColor: theme.colors.primary, lazy: true }}
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: theme.colors.primary,
+        tabBarInactiveTintColor: theme.colors.placeholder || '#999',
+        lazy: true,
+      }}
     >
       <Tab.Screen
         name="Home"
@@ -84,7 +89,8 @@ function Tabs() {
         name="Gallery"
         component={GalleryScreen}
         options={{
-          tabBarIcon: ({ color, size }) => <Icon name="image-multiple" color={color} size={size} />,
+          // use a widely supported glyph name to avoid missing-glyph fallbacks
+          tabBarIcon: ({ color, size }) => <Icon name="image" color={color} size={size} />,
         }}
       />
     </Tab.Navigator>

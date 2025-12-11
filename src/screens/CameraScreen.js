@@ -2,6 +2,8 @@ import React, { useRef, useState, useEffect } from 'react';
 import { View, StyleSheet, Image, Alert } from 'react-native';
 import { Button, TextInput, Text } from 'react-native-paper';
 import * as ExpoCamera from 'expo-camera';
+// Use the legacy API to keep `moveAsync` available (new File/Directory classes exist in the
+// modern API). This avoids runtime errors caused by the deprecated default export.
 import * as FileSystem from 'expo-file-system/legacy';
 import { useApp } from '../context/AppContext';
 import { useFocusEffect } from '@react-navigation/native';
@@ -12,6 +14,7 @@ export default function CameraScreen() {
   const [photoUri, setPhotoUri] = useState(null);
   const [note, setNote] = useState('');
   const [taking, setTaking] = useState(false);
+  const [cameraReady, setCameraReady] = useState(false);
   const { savePhoto } = useApp();
   const CameraComponent = ExpoCamera.CameraView || ExpoCamera.default || ExpoCamera;
   const [cameraActive, setCameraActive] = useState(false);
@@ -41,6 +44,10 @@ export default function CameraScreen() {
 
   const takePicture = async () => {
     if (!cameraRef.current || taking) return;
+    if (!cameraReady) {
+      Alert.alert('Camera not ready', "Please wait for the camera to initialize.");
+      return;
+    }
     setTaking(true);
     try {
       const runner = cameraRef.current.takePictureAsync || cameraRef.current.takePicture;
@@ -103,7 +110,17 @@ export default function CameraScreen() {
     if (!photoUri) return;
     const fileName = `${FileSystem.documentDirectory}photo_${Date.now()}.jpg`;
     try {
-      await FileSystem.copyAsync({ from: photoUri, to: fileName });
+      // Prefer moveAsync to avoid deprecated copyAsync warnings. Fall back to copyAsync or downloadAsync.
+      if (typeof FileSystem.moveAsync === 'function') {
+        await FileSystem.moveAsync({ from: photoUri, to: fileName });
+      } else if (typeof FileSystem.copyAsync === 'function') {
+        await FileSystem.copyAsync({ from: photoUri, to: fileName });
+      } else if (typeof FileSystem.downloadAsync === 'function') {
+        // downloadAsync will fetch the file and write it to the destination
+        await FileSystem.downloadAsync(photoUri, fileName);
+      } else {
+        throw new Error('No suitable FileSystem method available to save the photo');
+      }
       const obj = { id: String(Date.now()), uri: fileName, note, createdAt: Date.now() };
       savePhoto(obj);
       setPhotoUri(null);
@@ -113,7 +130,8 @@ export default function CameraScreen() {
         } catch (_e) {
         }
       } catch (err) {
-        console.warn('Failed to save photo', err);
+      console.warn('Failed to save photo', err);
+      Alert.alert('Save error', String(err?.message || err));
       }
   };
 
@@ -132,9 +150,17 @@ export default function CameraScreen() {
     <View style={styles.container}>
       {!photoUri ? (
         <View style={styles.cameraContainer}>
-          <CameraComponent style={styles.cameraAbsolute} ref={cameraRef} ratio="16:9" />
+          <CameraComponent
+            style={styles.cameraAbsolute}
+            ref={cameraRef}
+            ratio="16:9"
+            onCameraReady={() => setCameraReady(true)}
+            onMountError={() => setCameraReady(false)}
+          />
           <View style={styles.cameraControlsOverlay} pointerEvents="box-none">
-            <Button mode="contained" onPress={takePicture}>Take Photo</Button>
+            <Button mode="contained" onPress={takePicture} disabled={!cameraReady || taking}>
+              {taking ? 'Taking...' : 'Take Photo'}
+            </Button>
           </View>
         </View>
       ) : (

@@ -9,6 +9,7 @@ export default function GalleryScreen() {
     <View style={styles.container}>
       <FlatList
         data={photos}
+        contentContainerStyle={photos.length === 0 ? styles.flatEmptyContainer : undefined}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <Card style={styles.card}>
@@ -32,4 +33,5 @@ const styles = StyleSheet.create({
   card: { margin: 8 },
   image: { width: '100%', height: 300 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  flatEmptyContainer: { flex: 1 },
 });
